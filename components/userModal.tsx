@@ -1,3 +1,4 @@
+import { Contact } from "@lib/types";
 import { useState } from "react";
 import { Container, Modal } from "semantic-ui-react";
 // import useSWR from "swr";
@@ -5,14 +6,23 @@ import UserForm, { Form } from "./userForm";
 
 const URL = "http://localhost:3000/api/users";
 
-const UserModal = ({ trigger, edit }) => {
+interface Props {
+    trigger: JSX.Element;
+    edit: boolean;
+    person?: Contact;
+}
+
+const UserModal = ({ trigger, edit, person }: Props) => {
     const [open, setOpen] = useState(false);
     const onSubmit = async (data: Form) => {
-        console.log(`JSON.stringify(data)`, JSON.stringify(data));
+        // console.log(`JSON.stringify(data)`, JSON.stringify(data));
         if (edit) {
+            if (!person) {
+                return;
+            }
             fetch(URL, {
-                method: "UPDATE",
-                body: JSON.stringify(data),
+                method: "PUT",
+                body: JSON.stringify({ ...person, ...data }),
             }).then((res) => console.log(res.json()));
         } else {
             fetch(URL, {
@@ -36,7 +46,12 @@ const UserModal = ({ trigger, edit }) => {
                 open={open}
                 trigger={trigger}
             >
-                <UserForm onSubmit={onSubmit} />
+                <UserForm
+                    onSubmit={onSubmit}
+                    firstName={person?.firstName}
+                    lastName={person?.lastName}
+                    phoneNumber={person?.phoneNumber}
+                />
             </Modal>
         </>
     );

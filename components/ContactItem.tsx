@@ -21,6 +21,15 @@ const switchFavorite = async (contact: Contact) => {
     console.log(json);
 };
 
+const deleteOne = async (id) => {
+    const res = await fetch(URL, {
+        method: "DELETE",
+        body: JSON.stringify({ id }),
+    });
+    const json = await res.json();
+    console.log(json);
+};
+
 const ContactItem = ({ contact }: Props) => {
     return (
         <>
@@ -40,8 +49,15 @@ const ContactItem = ({ contact }: Props) => {
                 <UserModal
                     trigger={<Button circular icon="edit" />}
                     edit={true}
+                    person={contact}
                 />
-                <Button circular icon="delete" />
+                <Button
+                    circular
+                    icon="delete"
+                    onClick={() => {
+                        deleteOne(contact.id);
+                    }}
+                />
             </List.Content>
         </>
     );

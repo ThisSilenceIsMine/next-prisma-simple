@@ -57,7 +57,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             } catch (error) {
                 return res.status(500).json(error);
             }
-
+        case "DELETE":
+            try {
+                if (!id) {
+                    throw new Error("No id specified");
+                }
+                const person = await prisma.person.delete({
+                    where: { id },
+                });
+                res.status(200).json(person);
+            } catch (error) {
+                res.status(500).json(error);
+            }
+            break;
         default:
             res.status(402).send({});
             break;
