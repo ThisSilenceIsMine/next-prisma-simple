@@ -9,13 +9,22 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             throw { message: "Invalid data", code: 400 };
         }
     };
-    const { id, firstName, lastName, phoneNumber, isFavorite } = JSON.parse(
-        req.body
-    ) as Person;
 
     switch (req.method) {
+        case "GET": {
+            try {
+                const persons = await prisma.person.findMany({});
+                return res.status(200).json(persons);
+            } catch (error) {
+                return res.status(500).json({ error });
+            }
+        }
         case "POST":
             try {
+                const { firstName, lastName, phoneNumber } = JSON.parse(
+                    req.body
+                ) as Person;
+
                 const data = {
                     firstName: firstName,
                     lastName: lastName,
@@ -37,6 +46,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         case "PUT":
             try {
+                const {
+                    id,
+                    firstName,
+                    lastName,
+                    phoneNumber,
+                    isFavorite,
+                } = JSON.parse(req.body) as Person;
+
                 const data: Omit<Person, "id"> = {
                     firstName: firstName,
                     lastName: lastName,
@@ -59,6 +76,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             }
         case "DELETE":
             try {
+                const { id } = JSON.parse(req.body) as Person;
                 if (!id) {
                     throw new Error("No id specified");
                 }
@@ -74,6 +92,4 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             res.status(402).send({});
             break;
     }
-
-    // res.status(200).json({ name: "John Doe" });
 };

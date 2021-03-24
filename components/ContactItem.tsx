@@ -1,6 +1,7 @@
 import { Contact } from "@lib/types";
 import React from "react";
 import { Button, Icon, List } from "semantic-ui-react";
+import { mutate } from "swr";
 import UserModal from "./userModal";
 
 interface Props {
@@ -18,6 +19,9 @@ const switchFavorite = async (contact: Contact) => {
     });
 
     const json = await res.json();
+
+    mutate("/api/users");
+
     console.log(json);
 };
 
@@ -27,6 +31,9 @@ const deleteOne = async (id) => {
         body: JSON.stringify({ id }),
     });
     const json = await res.json();
+
+    mutate("/api/users");
+
     console.log(json);
 };
 

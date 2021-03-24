@@ -1,5 +1,6 @@
 import { Contact } from "@lib/types";
 import { useState } from "react";
+import { mutate } from "swr";
 import { Container, Modal } from "semantic-ui-react";
 // import useSWR from "swr";
 import UserForm, { Form } from "./userForm";
@@ -20,15 +21,18 @@ const UserModal = ({ trigger, edit, person }: Props) => {
             if (!person) {
                 return;
             }
+
             fetch(URL, {
                 method: "PUT",
                 body: JSON.stringify({ ...person, ...data }),
             }).then((res) => console.log(res.json()));
+            mutate("/api/users");
         } else {
             fetch(URL, {
                 method: "POST",
                 body: JSON.stringify(data),
             }).then((res) => console.log(res.json()));
+            mutate("/api/users");
         }
 
         setOpen(false);

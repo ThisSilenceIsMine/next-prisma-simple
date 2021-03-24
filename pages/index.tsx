@@ -4,34 +4,30 @@ import "semantic-ui-css/semantic.min.css";
 import { Tab, Container, Button } from "semantic-ui-react";
 import { ContactsList } from "../components/contactsList";
 import prisma from "@lib/prisma";
+import useSWR from "swr";
 
-const mockContacts = [
-    { name: "Emil", phone: "+380984686733", isFavorite: true },
-    { name: "Ivan", phone: "+380984686733", isFavorite: false },
-    { name: "Alex", phone: "+380984686733", isFavorite: true },
-    { name: "Anton", phone: "+380984686733", isFavorite: false },
-];
+const fetcher = (url) =>
+    fetch(`http://localhost:3000${url}`).then((res) => res.json());
 
 export default function Home({ persons }) {
+    const { data, error } = useSWR("/api/users", fetcher, {
+        initialData: persons,
+    });
+
     const panes = [
         {
             menuItem: "Contacts",
-            render: () => {
-                return (
-                    <>
-                        <UserModal
-                            trigger={<Button>Add</Button>}
-                            edit={false}
-                        />
-                        <ContactsList contacts={persons} />
-                    </>
-                );
-            },
+            render: () => (
+                <>
+                    <UserModal trigger={<Button>Add</Button>} edit={false} />
+                    <ContactsList contacts={data} />
+                </>
+            ),
         },
         {
             menuItem: "Favorites",
             render: () => (
-                <ContactsList contacts={persons.filter((x) => x.isFavorite)} />
+                <ContactsList contacts={data.filter((x) => x.isFavorite)} />
             ),
         },
     ];
