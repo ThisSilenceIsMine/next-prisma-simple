@@ -1,20 +1,9 @@
+import UserModal from "components/userModal";
 import { GetServerSideProps } from "next";
 import "semantic-ui-css/semantic.min.css";
-import { Tab, Container } from "semantic-ui-react";
+import { Tab, Container, Button } from "semantic-ui-react";
 import { ContactsList } from "../components/contactsList";
-
-const panes = [
-    {
-        menuItem: "Contacts",
-        render: () => <ContactsList contacts={mockContacts} />,
-    },
-    {
-        menuItem: "Favorites",
-        render: () => (
-            <ContactsList contacts={mockContacts.filter((x) => x.isFavorite)} />
-        ),
-    },
-];
+import prisma from "@lib/prisma";
 
 const mockContacts = [
     { name: "Emil", phone: "+380984686733", isFavorite: true },
@@ -23,7 +12,30 @@ const mockContacts = [
     { name: "Anton", phone: "+380984686733", isFavorite: false },
 ];
 
-export default function Home() {
+export default function Home({ persons }) {
+    const panes = [
+        {
+            menuItem: "Contacts",
+            render: () => {
+                return (
+                    <>
+                        <UserModal
+                            trigger={<Button>Add</Button>}
+                            edit={false}
+                        />
+                        <ContactsList contacts={persons} />
+                    </>
+                );
+            },
+        },
+        {
+            menuItem: "Favorites",
+            render: () => (
+                <ContactsList contacts={persons.filter((x) => x.isFavorite)} />
+            ),
+        },
+    ];
+
     return (
         <Container>
             <Tab panes={panes}></Tab>
@@ -32,9 +44,11 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+    const persons = await prisma.person.findMany({});
+    // console.log(`persons`, persons);
     return {
         props: {
-            label: "hi",
+            persons,
         },
     };
 };

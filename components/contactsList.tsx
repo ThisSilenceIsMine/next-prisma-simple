@@ -1,9 +1,12 @@
 import React from "react";
-import { Button, Icon, List } from "semantic-ui-react";
+import { List } from "semantic-ui-react";
+import Contact from "./ContactItem";
 
 interface Contact {
-    name: string;
-    phone: string;
+    id: number;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
     isFavorite: boolean;
 }
 
@@ -16,21 +19,8 @@ export const ContactsList = ({ contacts }: Props) => {
         <List divided relaxed>
             {contacts.map((contact) => {
                 return (
-                    <List.Item key={contact.name}>
-                        <List.Content floated="left">
-                            <List.Header>{contact.name}</List.Header>
-                            <List.Description>{contact.phone}</List.Description>
-                        </List.Content>
-                        <List.Content floated="right">
-                            <Button circular icon>
-                                <Icon
-                                    inverted={!contact.isFavorite}
-                                    name="favorite"
-                                />
-                            </Button>
-                            <Button circular icon="edit" />
-                            <Button circular icon="delete" />
-                        </List.Content>
+                    <List.Item key={contact.id}>
+                        <Contact contact={contact} />
                     </List.Item>
                 );
             })}

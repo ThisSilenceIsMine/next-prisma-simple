@@ -1,33 +1,44 @@
-import React from "react";
-import useSWR from "swr";
-import { useForm } from "react-hook-form";
-import { Form, FormInput } from "semantic-ui-react";
+import { useState } from "react";
+import { Container, Modal } from "semantic-ui-react";
+// import useSWR from "swr";
+import UserForm, { Form } from "./userForm";
 
-interface Form {
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-}
+const URL = "http://localhost:3000/api/users";
 
-const UserModal = (props: Form) => {
-    const { register, handleSubmit } = useForm<Form>();
+const UserModal = ({ trigger, edit }) => {
+    const [open, setOpen] = useState(false);
+    const onSubmit = async (data: Form) => {
+        console.log(`JSON.stringify(data)`, JSON.stringify(data));
+        if (edit) {
+            fetch(URL, {
+                method: "UPDATE",
+                body: JSON.stringify(data),
+            }).then((res) => console.log(res.json()));
+        } else {
+            fetch(URL, {
+                method: "POST",
+                body: JSON.stringify(data),
+            }).then((res) => console.log(res.json()));
+        }
+
+        setOpen(false);
+    };
+
     return (
-        <div>
-            <Form>
-                <Form.Field>
-                    <label>First Name</label>
-                    <input type="text" placeholder="First Name" />
-                </Form.Field>
-                <Form.Field>
-                    <label>Last Name</label>
-                    <input type="text" placeholder="Last Name" />
-                </Form.Field>
-                <Form.Field>
-                    <label>Phone Number</label>
-                    <input type="text" placeholder="Phone Number" />
-                </Form.Field>
-            </Form>
-        </div>
+        <>
+            <Modal
+                onClose={() => {
+                    setOpen(false);
+                }}
+                onOpen={() => {
+                    setOpen(true);
+                }}
+                open={open}
+                trigger={trigger}
+            >
+                <UserForm onSubmit={onSubmit} />
+            </Modal>
+        </>
     );
 };
 
